@@ -1,5 +1,5 @@
 databases:
-  - name: foodme-db
+  - name: foodme-barseghyanna033
     plan: free
     databaseName: foodme
     user: foodme
