@@ -35,4 +35,12 @@ class ChefControllerTest {
                 .andExpect(jsonPath("$.username").value("marta-k"))
                 .andExpect(jsonPath("$.dishes").isArray());
     }
+
+    // FOOD-1
+    @Test
+    void getChefById_returnsMenuWhenDishHasNoArmenianName() throws Exception {
+        mockMvc.perform(get("/api/chef/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dishes[?(@.id == 5)].nameEn").value("Missing Armenian Name"));
+    }
 }
