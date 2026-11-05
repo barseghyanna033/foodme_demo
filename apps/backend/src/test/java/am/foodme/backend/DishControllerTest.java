@@ -34,4 +34,12 @@ class DishControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dishDtoList[0].nameEn").value("Lavash Wrap"));
     }
+
+    // FOOD-1
+    @Test
+    void getActiveDishesForChef_returnsDishWithNoArmenianName() throws Exception {
+        mockMvc.perform(get("/api/dish/2/active").param("page", "0").param("size", "50"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dishDtoList[?(@.id == 5)].nameEn").value("Missing Armenian Name"));
+    }
 }
