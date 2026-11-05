@@ -100,4 +100,4 @@ These rules apply to all work in this repository:
 - [.claude/rules/code-quality.md](.claude/rules/code-quality.md): coding, security, and reporting standards
 - [.claude/rules/testing.md](.claude/rules/testing.md): test levels and how to run and report tests
 
-Skills in `.claude/skills/`: `code-review`, `unit-testing`, `integration-testing`, `e2e-testing`. `.agents/skills/` holds identical copies, so update both together.
+Skills in `.claude/skills/`: `code-review`, `unit-testing`, `integration-testing`, `e2e-testing`, `regression-testing`. `.agents/skills/` holds identical copies, so update both together.
