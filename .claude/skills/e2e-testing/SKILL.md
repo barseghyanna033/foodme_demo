@@ -51,9 +51,15 @@ E2E tests create accounts and orders and change order status, so they write real
 ## Flaky Tests
 Do not copy patterns from `flake-*.spec.ts` files or tests marked `FM-FLAKE-*`, such as the fixed `waitForTimeout(300)` in `flake-dish-modal.spec.ts`. If one of these fails, investigate and report it. Do not assume it is flaky, and do not retry until it passes.
 
+## E2E Test Conventions
+- Prefer `getByRole` and `getByLabel`. Use `page.locator` only when no role or label fits. Existing tests do not use `getByTestId`.
+- For storefront tests, reuse the helpers in `apps/web/e2e/auth.ts`, which create accounts with unique emails.
+
+## Reading Results
+The Playwright configs use only the `html` reporter, so the terminal may not show per-test results. To see them, run `npm run test:e2e -- --reporter=list`. Report only counts from this run.
+
+## Scope
+Follow the Scope section in `AGENTS.md`. Do not change application code just to make a test pass unless the code is actually wrong. Do not weaken assertions, skip tests, or install tools. Do not commit or push unless asked.
+
 ## Final Report
-Provide:
-- Files created or modified.
-- User workflows covered.
-- Commands executed.
-- Test results and any remaining issues.
+Follow the Reporting section in `AGENTS.md`, and also list the user workflows covered and the backend target used.

@@ -42,9 +42,18 @@ When a change touches migrations or nullable columns, add a matching case to `da
 ## Flaky Tests
 Do not copy patterns from tests marked `FM-FLAKE-*`, such as the order-dependent `FM-100001` tests in `OrderControllerTest.java`. If one of these fails, investigate and report it. Do not assume it is flaky, and do not retry until it passes.
 
+## Backend Test Conventions
+- Use `@SpringBootTest`, `@AutoConfigureMockMvc` and `@ActiveProfiles("test")`. Model new tests on `ChefControllerTest.java`.
+- Existing tests go through controllers with MockMvc. None target repositories directly.
+
+## Shared Seed Data
+All Spring tests share `apps/backend/src/test/resources/data.sql`. Before changing it, search for assertions that depend on it, such as the dish count for chef 1 in `DishControllerTest.java` and the active chef count in `ChefControllerTest.java`. Add new rows where no existing count or ordering is affected.
+
+## Reading Results
+Check for `BUILD SUCCESSFUL` and exit code 0 before reporting a pass. Old XML files can remain in `build/test-results/test` after a failed run, so confirm their timestamps are from this run before using their counts.
+
+## Scope
+Follow the Scope section in `AGENTS.md`. Do not change existing tests unnecessarily, weaken assertions, skip tests, or install tools. Do not commit or push unless asked.
+
 ## Final Report
-Provide:
-- Files created or modified.
-- Components and interactions tested.
-- Commands executed.
-- Test results and any remaining issues.
+Follow the Reporting section in `AGENTS.md`, and also list the components and interactions tested.
