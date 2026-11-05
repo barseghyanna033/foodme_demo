@@ -20,8 +20,12 @@ These apply to backend tests. Run them from `apps/backend`, and use `gradlew.bat
 
 - JDK 17 must be installed. The Gradle toolchain cannot download it, and a newer JDK does not count. Do not install a JDK without asking.
 - PostgreSQL is not needed for tests.
-- One class: `./gradlew test --tests "am.foodme.backend.<ClassName>"`
-- Full suite: `./gradlew test`
+- One class:
+  - Unix/Linux/macOS: `./gradlew test --tests "am.foodme.backend.<ClassName>"`
+  - Windows PowerShell: `.\gradlew.bat test --tests "am.foodme.backend.<ClassName>"`
+- Full suite:
+  - Unix/Linux/macOS: `./gradlew test`
+  - Windows PowerShell: `.\gradlew.bat test`
 
 ## Flaky Tests
 Do not copy patterns from `flake-*.spec.ts` files or tests marked `FM-FLAKE-*`. If one of these fails, investigate and report it. Do not assume it is flaky, and do not retry until it passes.

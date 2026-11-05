@@ -21,8 +21,12 @@ Run these from `apps/backend`, and use `gradlew.bat` on Windows.
 
 - JDK 17 must be installed. The Gradle toolchain cannot download it, and a newer JDK does not count. Do not install a JDK without asking.
 - PostgreSQL is not needed for tests.
-- One class: `./gradlew test --tests "am.foodme.backend.<ClassName>"`
-- Full suite: `./gradlew test`
+- One class:
+  - Unix/Linux/macOS: `./gradlew test --tests "am.foodme.backend.<ClassName>"`
+  - Windows PowerShell: `.\gradlew.bat test --tests "am.foodme.backend.<ClassName>"`
+- Full suite:
+  - Unix/Linux/macOS: `./gradlew test`
+  - Windows PowerShell: `.\gradlew.bat test`
 
 ## What These Tests Cannot Catch
 Tests run on in-memory H2 with Flyway disabled, and Hibernate creates the schema from the entity classes. They do not verify migrations or real seed data.
