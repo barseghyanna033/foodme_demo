@@ -1,6 +1,6 @@
 # Agent Guidelines
 
-These rules apply to every agent working in this repository. See [CLAUDE.md](CLAUDE.md) for the architecture and verified commands. Detailed rules are in `.claude/rules/`, and `.agents/rules/` holds the same content.
+These rules apply to every agent working in this repository. See [CLAUDE.md](CLAUDE.md) for the architecture and verified commands. Detailed rules are in `.claude/rules/` and skills are in `.claude/skills/`. `.agents/rules/` and `.agents/skills/` hold identical copies, so update both whenever you change either one.
 
 ## Before Changing Code
 

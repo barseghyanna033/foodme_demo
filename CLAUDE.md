@@ -91,6 +91,7 @@ Keep these limits in mind:
 
 - `.env.example` refers to `infra/docker-compose.yml` and `docs/deployment.md`, but neither exists in this repository. Do not rely on Docker Compose commands.
 - The root `README.md` is a step-by-step deployment guide for Render, not a developer guide.
+- **Builds inside OneDrive:** Gradle can fail with `Unable to delete directory ...\build\...` when the repository is in a OneDrive folder. The affected folders were marked `ReadOnly, ReparsePoint`, and OneDrive is the likely cause, though this is not proven. `gradlew clean` hit the same error and left the build folder partly deleted. Run the tests from a copy outside OneDrive, or move the repository.
 
 ## Rules and Skills
 
@@ -99,4 +100,4 @@ These rules apply to all work in this repository:
 - [.claude/rules/code-quality.md](.claude/rules/code-quality.md): coding, security, and reporting standards
 - [.claude/rules/testing.md](.claude/rules/testing.md): test levels and how to run and report tests
 
-Skills in `.claude/skills/`: `code-review`, `unit-testing`, `integration-testing`, `e2e-testing`.
+Skills in `.claude/skills/`: `code-review`, `unit-testing`, `integration-testing`, `e2e-testing`. `.agents/skills/` holds identical copies, so update both together.

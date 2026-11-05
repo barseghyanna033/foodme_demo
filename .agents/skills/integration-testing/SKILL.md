@@ -1,4 +1,4 @@
-﻿---
+---
 name: integration-testing
 description: Create and improve integration tests for FoodMe APIs, services, repositories, and database interactions.
 ---
@@ -9,22 +9,12 @@ description: Create and improve integration tests for FoodMe APIs, services, rep
 Verify that different parts of the FoodMe application work correctly together.
 
 ## Instructions
-1. Inspect the components and interactions that need testing.
-2. Review existing integration tests and follow their conventions.
-3. Identify API endpoints, services, repositories, and database interactions involved.
-4. Use the existing test framework and configuration.
-5. Test successful responses and error scenarios.
-6. Verify request validation, response data, and relevant status codes.
-7. Use the existing `test` profile and the seed data in `apps/backend/src/test/resources/data.sql`.
-8. Avoid modifying production code only to make tests pass.
-9. Run the relevant integration tests using the commands under Prerequisites and Commands.
-10. Investigate failures and report the results.
-
-## FoodMe Guidelines
-- Backend uses Spring Boot 3.3.4 and Java 17.
-- Existing backend tests use JUnit 5, Spring Boot Test, and MockMvc.
-- Existing tests are located under apps/backend/src/test.
-- Inspect build.gradle and existing test classes before making changes.
+1. Identify the API endpoints, services, repositories, and database interactions involved.
+2. Read the existing tests in `apps/backend/src/test`.
+3. Test successful responses and error scenarios, including request validation, response data, and status codes.
+4. Use the existing `test` profile and the seed data in `apps/backend/src/test/resources/data.sql`.
+5. Run the relevant integration tests using the commands under Prerequisites and Commands.
+6. Investigate failures and report the results.
 
 ## Prerequisites and Commands
 Run these from `apps/backend`, and use `gradlew.bat` on Windows.
@@ -53,7 +43,7 @@ All Spring tests share `apps/backend/src/test/resources/data.sql`. Before changi
 Check for `BUILD SUCCESSFUL` and exit code 0 before reporting a pass. Old XML files can remain in `build/test-results/test` after a failed run, so confirm their timestamps are from this run before using their counts.
 
 ## Scope
-Follow the Scope section in `AGENTS.md`. Do not change existing tests unnecessarily, weaken assertions, skip tests, or install tools. Do not commit or push unless asked.
+Follow the Scope section in `AGENTS.md`. Do not change production code just to make a test pass unless the code is actually wrong. Do not change existing tests unnecessarily, weaken assertions, skip tests, or install tools. Do not commit or push unless asked.
 
 ## Final Report
 Follow the Reporting section in `AGENTS.md`, and also list the components and interactions tested.

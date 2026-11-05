@@ -1,4 +1,4 @@
-﻿---
+---
 name: code-review
 description: Review FoodMe code changes for bugs, security issues, maintainability, and opportunities for improvement.
 ---

@@ -1,4 +1,4 @@
-﻿# Code Quality Rules
+# Code Quality Rules
 
 ## General Standards
 - Follow the existing coding style and conventions of the project.

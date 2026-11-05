@@ -1,4 +1,4 @@
-﻿# Testing Rules
+# Testing Rules
 
 ## General Testing Principles
 - Choose the appropriate test level for each change.
