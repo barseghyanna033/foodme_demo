@@ -18,7 +18,7 @@ Verify that important FoodMe user workflows work correctly from the user interfa
 7. Use stable selectors and meaningful assertions.
 8. Avoid arbitrary fixed waits and dependencies on test execution order.
 9. Do not change existing tests unnecessarily.
-10. Run the relevant Playwright tests using verified project commands.
+10. Run the relevant Playwright tests using the commands under Prerequisites and Commands.
 11. Investigate failures and report the results.
 
 ## FoodMe Guidelines
@@ -26,8 +26,30 @@ Verify that important FoodMe user workflows work correctly from the user interfa
 - Admin E2E tests are located in apps/admin/e2e.
 - The project uses Playwright with Chromium.
 - Inspect package.json and Playwright configuration before running tests.
-- Verify whether the backend and other required services must be started separately.
-- Do not assume the application is available or test data exists.
+
+## Prerequisites and Commands
+Before running tests, confirm that:
+
+- Dependencies are installed with `npm ci` in the app being tested.
+- The Playwright Chromium browser is installed. If it is missing, ask the user before installing it.
+- The backend is running on port 8081, with its PostgreSQL database. Playwright starts only the frontend, on port 5180 for web or 5174 for admin. Do not assume test data exists.
+
+Commands:
+
+- Storefront, from `apps/web`: `npm run test:e2e`
+- Storefront then admin, from `apps/web`: `npm run test:e2e:all`
+- Admin, from `apps/admin`: `npm run test:e2e`
+
+## Data Safety
+E2E tests create accounts and orders and change order status, so they write real data to the target backend.
+
+- Run them only against a local backend unless the user explicitly approves another target.
+- Check `VITE_API_BASE_URL`, `PLAYWRIGHT_BASE_URL` and `ADMIN_BASE_URL` before running.
+- `apps/web/e2e/layout.spec.ts` always calls `http://localhost:8081`, so setting `VITE_API_BASE_URL` does not redirect every test.
+- Never print the credentials used in the tests.
+
+## Flaky Tests
+Do not copy patterns from `flake-*.spec.ts` files or tests marked `FM-FLAKE-*`, such as the fixed `waitForTimeout(300)` in `flake-dish-modal.spec.ts`. If one of these fails, investigate and report it. Do not assume it is flaky, and do not retry until it passes.
 
 ## Final Report
 Provide:

@@ -16,7 +16,7 @@ Create reliable unit tests for the FoodMe project.
 5. Write focused tests for individual units of code.
 6. Cover normal cases, boundary cases, and error cases.
 7. Keep tests independent and avoid unnecessary mocking.
-8. Run the relevant unit tests using verified project commands.
+8. Run the relevant unit tests using the commands under Prerequisites and Commands.
 9. Analyze failures and report the results.
 
 ## FoodMe Guidelines
@@ -25,6 +25,17 @@ Create reliable unit tests for the FoodMe project.
 - Admin uses React and JavaScript.
 - Do not assume a frontend unit-testing framework is installed.
 - Inspect package.json and build.gradle before choosing commands.
+
+## Prerequisites and Commands
+These apply to backend tests. Run them from `apps/backend`, and use `gradlew.bat` on Windows.
+
+- JDK 17 must be installed. The Gradle toolchain cannot download it, and a newer JDK does not count. Do not install a JDK without asking.
+- PostgreSQL is not needed for tests.
+- One class: `./gradlew test --tests "am.foodme.backend.<ClassName>"`
+- Full suite: `./gradlew test`
+
+## Flaky Tests
+Do not copy patterns from `flake-*.spec.ts` files or tests marked `FM-FLAKE-*`. If one of these fails, investigate and report it. Do not assume it is flaky, and do not retry until it passes.
 
 ## Final Report
 Provide:
