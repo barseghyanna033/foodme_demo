@@ -3,6 +3,7 @@ const OrderStatus = {
     ACCEPTED: 'ACCEPTED',
     DELIVERED: 'DELIVERED',
     REJECTED: 'REJECTED',
+    CANCELLED: 'CANCELLED',
 };
 
 const OrderStatusColors = {
@@ -10,7 +11,11 @@ const OrderStatusColors = {
     [OrderStatus.ACCEPTED]: 'warning',
     [OrderStatus.DELIVERED]: 'success',
     [OrderStatus.REJECTED]: 'error',
+    [OrderStatus.CANCELLED]: 'default',
 };
+
+// Statuses whose orders are excluded from revenue.
+const NonRevenueOrderStatuses = [OrderStatus.REJECTED, OrderStatus.CANCELLED];
 
 // Allowed forward transitions per current status
 const OrderStatusTransitions = {
@@ -18,6 +23,8 @@ const OrderStatusTransitions = {
     [OrderStatus.ACCEPTED]: [OrderStatus.DELIVERED, OrderStatus.REJECTED],
     [OrderStatus.DELIVERED]: [],
     [OrderStatus.REJECTED]: [],
+    // Customer-cancelled orders are final.
+    [OrderStatus.CANCELLED]: [],
 };
 
-export { OrderStatus, OrderStatusColors, OrderStatusTransitions };
+export { OrderStatus, OrderStatusColors, OrderStatusTransitions, NonRevenueOrderStatuses };

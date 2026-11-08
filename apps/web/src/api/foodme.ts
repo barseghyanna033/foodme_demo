@@ -46,4 +46,11 @@ export const foodmeApi = {
 
   getMyOrders: (page = 0, size = 20) =>
     apiClient.get<OrderListResponseDto>(`/api/customer/orders?page=${page}&size=${size}`),
+
+  /** Resolves only when the signed-in customer owns the order (404 otherwise). */
+  getMyOrder: (number: string) =>
+    apiClient.get<FullOrderDto>(`/api/customer/orders/${encodeURIComponent(number)}`),
+
+  cancelMyOrder: (number: string) =>
+    apiClient.post<FullOrderDto>(`/api/customer/orders/${encodeURIComponent(number)}/cancel`, {}),
 };

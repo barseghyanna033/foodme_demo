@@ -168,6 +168,34 @@ public class OrderService {
         return OrderDto.mapEntityToDto(order);
     }
 
+    /** Returns the order only if it belongs to the customer; another customer's order is not found. */
+    @Transactional(readOnly = true)
+    public OrderDto getForCustomer(String number, String customerEmail) {
+        Customer customer = customerRepository.findByEmail(customerEmail == null ? "" : customerEmail.trim().toLowerCase())
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Order order = orderRepository.findByNumberAndCustomerId(number, customer.getId())
+                .orElseThrow(() -> new NotFoundException("Order " + number + " not found"));
+        return OrderDto.mapEntityToDto(order);
+    }
+
+    /**
+     * Cancels the customer's own order while it is still NEW. The order is loaded with a
+     * row lock, the same one admin status changes take, so a concurrent accept and cancel
+     * cannot both succeed. Another customer's order is reported as not found.
+     */
+    @Transactional
+    public OrderDto cancelForCustomer(String number, String customerEmail) {
+        Customer customer = customerRepository.findByEmail(customerEmail == null ? "" : customerEmail.trim().toLowerCase())
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Order order = orderRepository.findByNumberAndCustomerIdForUpdate(number, customer.getId())
+                .orElseThrow(() -> new NotFoundException("Order " + number + " not found"));
+        if (!"NEW".equals(order.getStatus())) {
+            throw new BadRequestException("Cannot cancel order with status " + order.getStatus());
+        }
+        order.setStatus("CANCELLED");
+        return OrderDto.mapEntityToDto(orderRepository.save(order));
+    }
+
     @Transactional(readOnly = true)
     public OrderListResponseDto listForCustomer(String customerEmail, int page, int size) {
         Customer customer = customerRepository.findByEmail(customerEmail == null ? "" : customerEmail.trim().toLowerCase())

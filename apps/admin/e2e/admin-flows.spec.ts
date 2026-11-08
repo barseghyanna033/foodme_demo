@@ -41,7 +41,7 @@ async function createOrderViaApi(request: import("@playwright/test").APIRequestC
     },
   });
   expect(createRes.ok()).toBeTruthy();
-  return createRes.json();
+  return { ...(await createRes.json()), customerToken: token as string };
 }
 
 test.describe("Admin auth", () => {
@@ -87,6 +87,32 @@ test.describe("Admin resources", () => {
     await page.getByRole("button", { name: "Mark as ACCEPTED" }).click();
     await expect(page.getByText("Order status updated")).toBeVisible({ timeout: 10000 });
     await expect(page.getByText("ACCEPTED").first()).toBeVisible();
+  });
+
+  // FOOD-3: a customer-cancelled order is labelled CANCELLED and offers no status changes.
+  test("customer-cancelled order shows CANCELLED with no status actions", async ({
+    page,
+    request,
+  }) => {
+    const order = await createOrderViaApi(request);
+    const cancelRes = await request.post(`${API}/api/customer/orders/${order.number}/cancel`, {
+      headers: { Authorization: `Bearer ${order.customerToken}` },
+    });
+    expect(cancelRes.ok()).toBeTruthy();
+
+    await page.goto("/#/orders");
+    await page.getByRole("button", { name: "Refresh" }).click();
+    const row = page.getByRole("row").filter({ hasText: order.number });
+    await expect(row.getByText("CANCELLED")).toBeVisible({ timeout: 15000 });
+
+    await row.getByText(order.number).click();
+    await expect(page).toHaveURL(/#\/orders\/\d+\/show/);
+    await expect(
+      page.getByRole("heading", { name: `Order ${order.number}`, level: 5 }),
+    ).toBeVisible();
+    await expect(page.getByText("CANCELLED").first()).toBeVisible();
+    await expect(page.getByText("Change status")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Mark as / })).toHaveCount(0);
   });
 
   test("chefs list loads and opens edit", async ({ page }) => {

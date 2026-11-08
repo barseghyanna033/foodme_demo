@@ -50,7 +50,9 @@ public class AdminOrderService {
 
     @Transactional
     public OrderDto updateStatus(Long id, String newStatus, String rejectReason) {
-        Order order = findEntity(id);
+        Order order = orderRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new NotFoundException("Order " + id + " not found"));
+        // CANCELLED has no entry, so a cancelled order cannot be moved to any other status.
         Set<String> allowed = ALLOWED_TRANSITIONS.get(order.getStatus());
         if (allowed == null || !allowed.contains(newStatus)) {
             throw new BadRequestException("Cannot transition order from " + order.getStatus() + " to " + newStatus);
