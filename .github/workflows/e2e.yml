@@ -1,0 +1,124 @@
+
+name: FoodMe E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: foodme
+          POSTGRES_USER: foodme
+          POSTGRES_PASSWORD: foodme
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U foodme -d foodme"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: foodme
+      DB_USER: foodme
+      DB_PASSWORD: foodme
+      VITE_API_BASE_URL: http://localhost:8081
+      CI: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Backend
+        working-directory: apps/backend
+        run: ./gradlew bootJar --no-daemon
+
+      - name: Start Backend
+        run: |
+          nohup java -jar apps/backend/build/libs/foodme-backend-0.0.1-SNAPSHOT.jar > backend.log 2>&1 &
+          echo $! > backend.pid
+
+      - name: Wait for Backend
+        run: |
+          for i in {1..180}; do
+            if curl --fail --silent http://localhost:8081/actuator/health; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Waiting for Backend... ($i/180)"
+            sleep 5
+          done
+          echo "Backend did not become ready."
+          cat backend.log
+          exit 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            apps/admin/package-lock.json
+
+      - name: Install Web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Install Admin dependencies
+        working-directory: apps/admin
+        run: npm ci
+
+      - name: Install Web Playwright browser
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Admin Playwright browser
+        working-directory: apps/admin
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Web E2E tests
+        working-directory: apps/web
+        run: npm run test:e2e
+
+      - name: Run Admin E2E tests
+        working-directory: apps/admin
+        run: npm run test:e2e
+
+      - name: Upload Playwright reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-reports
+          path: |
+            apps/web/playwright-report/
+            apps/admin/playwright-report/
+          if-no-files-found: ignore
+
+      - name: Show Backend logs on failure
+        if: failure()
+        run: cat backend.log
