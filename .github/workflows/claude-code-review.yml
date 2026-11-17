@@ -1,0 +1,73 @@
+
+name: Claude Code Review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  review:
+    name: Claude PR Review
+    if: >-
+      github.repository == 'barseghyanna033/foodme_demo' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      # Claude GitHub App token may have write permissions;
+      # claude_args limits the tools Claude can use.
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            You are reviewing a pull request in FoodMe: a Spring Boot backend
+            (apps/backend), a customer React/Vite app (apps/web) and an admin
+            React/Vite app (apps/admin). The PR branch is already checked out.
+
+            Use `gh pr diff` and `gh pr view` to see what changed, and read
+            surrounding code only as needed. Review ONLY the changed code for:
+            - Bugs and logic errors (null handling, edge cases, wrong status checks)
+            - Security issues (authn/authz gaps, IDOR, injection, XSS, exposed secrets)
+            - Performance problems (N+1 queries, missing indexes, needless re-renders)
+            - Maintainability (duplication, unclear naming, missing or weak tests)
+
+            How to report:
+            - For a specific problem on a changed line, use
+              `mcp__github_inline_comment__create_inline_comment` with `confirmed: true`.
+            - Then post ONE summary comment with `gh pr comment`, findings grouped
+              by severity (Critical / High / Medium / Low). If you find nothing
+              significant, say so briefly.
+            - Skip trivial style nitpicks. Only post GitHub comments; don't put the
+              review only in your messages.
+
+            Hard rules:
+            - Do NOT modify, create, delete or commit any files.
+            - Do NOT approve, request changes on, merge or close the PR.
+            - Only interact with this repository and this pull request.
+          claude_args: |
+            --allowedTools "Read,Glob,Grep,mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --disallowedTools "Edit,Write,MultiEdit,NotebookEdit"
