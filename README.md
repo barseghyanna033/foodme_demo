@@ -147,3 +147,6 @@ Grafana access) — fine for a workshop, but don't treat the URL as a secret.
 
 More technical detail, including ready-to-paste Claude Code and Claude Desktop
 configs, lives in `infra/monitoring/README.md`.
+
+<!-- Claude Code Review test -->
+
