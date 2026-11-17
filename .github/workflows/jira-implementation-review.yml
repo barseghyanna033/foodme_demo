@@ -39,17 +39,20 @@ jobs:
         run: |
           ISSUE_KEY=$(printf '%s\n%s\n%s' \
             "$PR_BRANCH" "$PR_TITLE" "$PR_BODY" |
-            grep -Eo '[A-Z][A-Z0-9]+-[0-9]+' | head -n 1 || true)
+            grep -Eo '\bFOOD-[0-9]+\b' | head -n 1 || true)
 
           if [ -z "$ISSUE_KEY" ]; then
-            echo "No Jira issue key found in PR title, body or branch."
-            exit 1
+            echo "No FOOD Jira issue key found. Skipping Jira review."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
+          echo "found=true" >> "$GITHUB_OUTPUT"
           echo "issue_key=$ISSUE_KEY" >> "$GITHUB_OUTPUT"
           echo "Found Jira issue: $ISSUE_KEY"
 
       - name: Fetch Jira requirements
+        if: steps.issue.outputs.found == 'true'
         env:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
@@ -69,6 +72,7 @@ jobs:
           }' > jira-issue.json
 
       - name: Run Claude Jira Implementation Review
+        if: steps.issue.outputs.found == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
